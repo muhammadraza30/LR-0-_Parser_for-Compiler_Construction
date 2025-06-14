@@ -221,20 +221,46 @@ class Parser:
         )
     
     def parse_if_statement(self) -> IfStatement:
-        """Parse if statement: 'if' '(' expression ')' statement ['else' statement]"""
-        if_token = self.advance()  # consume 'if'
-        
-        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'if'")
+        """Parse if statement: 'agar' '(' condition ')' '{' statement '}' ['varna' ( '{' statement '}' | 'agar' '(' condition ')' '{' statement '}' )]"""
+        if_token = self.advance()  # consume 'agar'
+
+        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'agar'")
         condition = self.parse_expression()
-        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after if condition")
-        
-        then_statement = self.parse_statement()
-        
+        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after condition")
+
+        # Ensure the body is enclosed in brackets
+        if not self.match(TokenType.LEFT_BRACE):
+            current = self.current_token()
+            error = SyntaxError(
+                "Expected '{' to start the body of 'agar' statement",
+                current.line,
+                current.column
+            )
+            self.error_reporter.report_error(error)
+            raise error
+
+        then_statement = self.parse_block()
+
         else_statement = None
-        if self.match(TokenType.ELSE):
-            self.advance()  # consume 'else'
-            else_statement = self.parse_statement()
-        
+        if self.match(TokenType.ELSE):  # 'varna'
+            self.advance()  # consume 'varna'
+
+            # Check if it's an 'else if' (varna agar)
+            if self.match(TokenType.IF):  # 'agar'
+                else_statement = self.parse_if_statement()  # Recursively parse the nested 'agar'
+            else:
+                # Ensure the body is enclosed in brackets for simple 'else'
+                if not self.match(TokenType.LEFT_BRACE):
+                    current = self.current_token()
+                    error = SyntaxError(
+                        "Expected '{' to start the body of 'varna' statement",
+                        current.line,
+                        current.column
+                    )
+                    self.error_reporter.report_error(error)
+                    raise error
+                else_statement = self.parse_block()
+
         return IfStatement(
             condition,
             then_statement,
@@ -244,15 +270,26 @@ class Parser:
         )
     
     def parse_while_statement(self) -> WhileStatement:
-        """Parse while statement: 'while' '(' expression ')' statement"""
-        while_token = self.advance()  # consume 'while'
-        
-        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'while'")
+        """Parse while statement: 'jabtak' '(' condition ')' '{' statement '}'"""
+        while_token = self.advance()  # consume 'jabtak'
+
+        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'jabtak'")
         condition = self.parse_expression()
-        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after while condition")
-        
-        body = self.parse_statement()
-        
+        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after condition")
+
+        # Ensure the body is enclosed in brackets
+        if not self.match(TokenType.LEFT_BRACE):
+            current = self.current_token()
+            error = SyntaxError(
+                "Expected '{' to start the body of 'jabtak' statement",
+                current.line,
+                current.column
+            )
+            self.error_reporter.report_error(error)
+            raise error
+
+        body = self.parse_block()
+
         return WhileStatement(
             condition,
             body,
@@ -261,56 +298,45 @@ class Parser:
         )
     
     def parse_for_statement(self) -> ForStatement:
-        """Parse for statement: 'for' '(' (declaration | assignment) ';' expression ';' assignment ')' statement"""
-        for_token = self.advance()  # consume 'for'
-        
-        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'for'")
-        
-        # Parse initialization (can be declaration or assignment)
+        """Parse for statement: 'tabtak' '(' init; condition; update ')' '{' statement '}'"""
+        for_token = self.advance()  # consume 'tabtak'
+
+        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'tabtak'")
+
+        # Parse initialization (declaration or assignment)
         if self.match(TokenType.INT, TokenType.BOOL, TokenType.STRING):
-            init_decl = self.parse_declaration()
-            # Convert declaration to assignment if it has initialization
-            if isinstance(init_decl, DeclareAndAssignNode):
-                init = Assignment(
-                    init_decl.identifier,
-                    init_decl.expression,
-                    init_decl.line,
-                    init_decl.column
-                )
-            else:
-                # Handle case where there's no initialization
-                current = self.current_token()
-                error = SyntaxError(
-                    "For loop initialization must include assignment",
-                    current.line,
-                    current.column
-                )
-                self.error_reporter.report_error(error)
-                raise error
-        else:
+            init = self.parse_declaration()
+        elif self.match(TokenType.IDENTIFIER):
             init = self.parse_assignment_without_semicolon()
-        
+        else:
+            self.consume(TokenType.SEMICOLON, "Expected ';' after initialization")
+            init = None
+
         # Parse condition
         condition = self.parse_expression()
-        self.consume(TokenType.SEMICOLON, "Expected ';' after for loop condition")
-        
-        # Parse update (must be assignment)
-        if not self.match(TokenType.IDENTIFIER):
+        self.consume(TokenType.SEMICOLON, "Expected ';' after condition")
+
+        # Parse update (assignment)
+        if self.match(TokenType.IDENTIFIER):
+            update = self.parse_assignment_without_semicolon()
+        else:
+            update = None
+
+        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after 'tabtak' header")
+
+        # Ensure the body is enclosed in brackets
+        if not self.match(TokenType.LEFT_BRACE):
             current = self.current_token()
             error = SyntaxError(
-                "Expected assignment in for loop update",
+                "Expected '{' to start the body of 'tabtak' statement",
                 current.line,
                 current.column
             )
             self.error_reporter.report_error(error)
             raise error
-        
-        update = self.parse_assignment_without_semicolon()
-        
-        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after for loop header")
-        
-        body = self.parse_statement()
-        
+
+        body = self.parse_block()
+
         return ForStatement(
             init,
             condition,

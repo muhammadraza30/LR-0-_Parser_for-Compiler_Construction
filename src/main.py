@@ -196,6 +196,12 @@ def interactive_mode():
             print("\nGoodbye!")
             break
 
+def resolve_test_file_path(filename: str) -> str:
+    """Resolve the path to a test file in the tests/test_cases folder."""
+    base_dir = os.path.dirname(__file__) 
+    test_cases_dir = os.path.join(base_dir, '..', 'tests', 'test_cases')  # Navigate to tests/test_cases
+    return os.path.join(test_cases_dir, filename)
+
 def main():
     """Main function"""
     if len(sys.argv) < 2:
@@ -215,8 +221,11 @@ def main():
     filename = sys.argv[-1]
     
     if not os.path.exists(filename):
-        print(f"Error: File '{filename}' does not exist.")
-        return 1
+        # Resolve path if file is in the test_cases folder
+        filename = resolve_test_file_path(filename)
+        if not os.path.exists(filename):
+            print(f"Error: File '{filename}' does not exist.")
+            sys.exit(1)
     
     if sys.argv[1] == '--tokens':
         # Show tokens only
