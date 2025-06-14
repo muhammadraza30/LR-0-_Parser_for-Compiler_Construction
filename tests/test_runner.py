@@ -1,7 +1,3 @@
-"""
-Test runner for SimpleLang syntax analyzer
-"""
-
 import os
 import sys
 from typing import List, Tuple
