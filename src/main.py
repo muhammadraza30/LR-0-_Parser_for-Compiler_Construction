@@ -1,7 +1,3 @@
-"""
-Main program for SimpleLang syntax analyzer
-"""
-
 import sys
 import os
 from typing import Optional
@@ -81,48 +77,6 @@ class SimpleLangAnalyzer:
         for i, token in enumerate(tokens):
             if token.type.name != 'EOF':
                 print(f"{i:3d}: {token}")
-    
-    def print_ast(self):
-        """Print AST structure for debugging"""
-        if not self.ast:
-            print("No AST available.")
-            return
-        
-        print("\nAbstract Syntax Tree:")
-        print("-" * 50)
-        self._print_ast_node(self.ast, 0)
-    
-    def _print_ast_node(self, node, indent: int):
-        """Recursively print AST nodes"""
-        indent_str = "  " * indent
-        
-        if hasattr(node, '__class__'):
-            print(f"{indent_str}{node.__class__.__name__}", end="")
-            
-            # Print node-specific information
-            if hasattr(node, 'type') and hasattr(node, 'identifier'):
-                print(f": {node.type.name} {node.identifier}")
-            elif hasattr(node, 'name'):
-                print(f": {node.name}")
-            elif hasattr(node, 'value'):
-                print(f": {node.value}")
-            elif hasattr(node, 'operator'):
-                print(f": {node.operator.name}")
-            else:
-                print()
-            
-            # Recursively print child nodes
-            for attr_name in ['statements', 'then_statement', 'else_statement', 
-                             'condition', 'body', 'init', 'update', 'expression',
-                             'left', 'right', 'operand']:
-                if hasattr(node, attr_name):
-                    attr_value = getattr(node, attr_name)
-                    if attr_value is not None:
-                        if isinstance(attr_value, list):
-                            for item in attr_value:
-                                self._print_ast_node(item, indent + 1)
-                        else:
-                            self._print_ast_node(attr_value, indent + 1)
 
 def print_usage():
     """Print usage information"""
@@ -130,7 +84,6 @@ def print_usage():
     print("Usage:")
     print("  python main.py <file.sl>           - Analyze a SimpleLang file")
     print("  python main.py --tokens <file.sl>  - Show tokens only")
-    print("  python main.py --ast <file.sl>     - Show AST after parsing")
     print("  python main.py --interactive       - Interactive mode")
 
 def interactive_mode():
@@ -153,19 +106,12 @@ def interactive_mode():
                 print("  exit/quit - Exit interactive mode")
                 print("  help      - Show this help")
                 print("  tokens    - Show tokens for last input")
-                print("  ast       - Show AST for last input")
                 continue
             elif line.lower() == 'tokens':
                 if hasattr(interactive_mode, 'last_source'):
                     analyzer.print_tokens(interactive_mode.last_source)
                 else:
                     print("No previous input.")
-                continue
-            elif line.lower() == 'ast':
-                if hasattr(analyzer, 'ast') and analyzer.ast:
-                    analyzer.print_ast()
-                else:
-                    print("No AST available. Parse some code first.")
                 continue
             elif not line:
                 continue
@@ -198,8 +144,8 @@ def interactive_mode():
 
 def resolve_test_file_path(filename: str) -> str:
     """Resolve the path to a test file in the tests/test_cases folder."""
-    base_dir = os.path.dirname(__file__) 
-    test_cases_dir = os.path.join(base_dir, '..', 'tests', 'test_cases')  # Navigate to tests/test_cases
+    base_dir = os.path.dirname(__file__)  # Get the directory of main.py
+    test_cases_dir = os.path.abspath(os.path.join(base_dir, '..', 'tests', 'test_cases'))  # Absolute path to test_cases
     return os.path.join(test_cases_dir, filename)
 
 def main():
@@ -214,21 +160,20 @@ def main():
         interactive_mode()
         return 0
     
-    if len(sys.argv) < 3:
-        print_usage()
-        return 1
-    
-    filename = sys.argv[-1]
-    
-    if not os.path.exists(filename):
-        # Resolve path if file is in the test_cases folder
-        filename = resolve_test_file_path(filename)
-        if not os.path.exists(filename):
-            print(f"Error: File '{filename}' does not exist.")
-            sys.exit(1)
-    
     if sys.argv[1] == '--tokens':
         # Show tokens only
+        if len(sys.argv) < 3:
+            print_usage()
+            return 1
+        
+        filename = sys.argv[2]
+        if not os.path.exists(filename):
+            # Resolve path if file is in the test_cases folder
+            filename = resolve_test_file_path(filename)
+            if not os.path.exists(filename):
+                print(f"Error: File '{filename}' does not exist.")
+                sys.exit(1)
+        
         try:
             with open(filename, 'r', encoding='utf-8') as file:
                 source = file.read()
@@ -237,16 +182,16 @@ def main():
             print(f"Error: {str(e)}")
             return 1
     
-    elif sys.argv[1] == '--ast':
-        # Show AST
-        success = analyzer.analyze_file(filename)
-        if success:
-            analyzer.print_ast()
-        return 0 if success else 1
-    
     else:
         # Regular analysis
         filename = sys.argv[1]
+        if not os.path.exists(filename):
+            # Resolve path if file is in the test_cases folder
+            filename = resolve_test_file_path(filename)
+            if not os.path.exists(filename):
+                print(f"Error: File '{filename}' does not exist.")
+                sys.exit(1)
+        
         success = analyzer.analyze_file(filename)
         return 0 if success else 1
 
