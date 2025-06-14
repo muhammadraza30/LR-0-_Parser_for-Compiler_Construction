@@ -1,0 +1,246 @@
+# SimpleLang Grammar Specification in BNF/EBNF
+# This grammar defines the syntax rules for the SimpleLang programming language
+
+# Program Structure
+<program>           ::= <statement_list>
+
+<statement_list>    ::= <statement> <statement_list> 
+                      | <statement>
+
+# Statements
+<statement>         ::= <declaration> 
+                      | <assignment> 
+                      | <control_statement> 
+                      | <block>
+                      | <expression_statement>
+                      | <return_statement>
+                      | <print_statement>
+
+# Variable Declaration
+<declaration>       ::= <type> <identifier> ";"
+                      | <type> <identifier> "=" <expression> ";"
+
+# Assignment Statement
+<assignment>        ::= <identifier> "=" <expression> ";"
+                      | <identifier> <assign_op> <expression> ";"
+
+<assign_op>         ::= "+=" | "-=" | "*=" | "/="
+
+# Expression Statement
+<expression_statement> ::= <expression> ";"
+
+# Return Statement
+<return_statement>  ::= "return" <expression> ";"
+                      | "return" ";"
+
+# Print Statement (updated for 'dikhao')
+<print_statement>   ::= "dikhao" "(" <expression_list> ")" ";"
+
+<expression_list>   ::= <expression>
+                      | <expression> "," <expression_list>
+
+# Variable Declaration (updated to explicitly show combined form)
+<declaration>       ::= <type> <identifier> ";"
+                      | <type> <identifier> "=" <expression> ";"
+
+# Control Structures
+<control_statement> ::= <if_statement> 
+                      | <while_statement> 
+                      | <for_statement>
+                      | <do_while_statement>
+                      | <break_statement>
+                      | <continue_statement>
+
+<if_statement>      ::= "if" "(" <expression> ")" <statement>
+                      | "if" "(" <expression> ")" <statement> "else" <statement>
+
+<while_statement>   ::= "while" "(" <expression> ")" <statement>
+
+<do_while_statement> ::= "do" <statement> "while" "(" <expression> ")" ";"
+
+<for_statement>     ::= "for" "(" <for_init> <expression> ";" <for_update> ")" <statement>
+
+<for_init>          ::= <declaration>
+                      | <assignment>
+                      | ";"
+
+<for_update>        ::= <assignment_expr>
+                      | <assignment_expr> "," <for_update>
+                      | ε
+
+<assignment_expr>   ::= <identifier> "=" <expression>
+                      | <identifier> <assign_op> <expression>
+                      | <identifier> "++"
+                      | <identifier> "--"
+                      | "++" <identifier>
+                      | "--" <identifier>
+
+<break_statement>   ::= "break" ";"
+
+<continue_statement> ::= "continue" ";"
+
+# Block Statement
+<block>             ::= "{" <statement_list> "}"
+                      | "{" "}"
+
+# Expressions (with precedence from lowest to highest)
+<expression>        ::= <conditional>
+
+<conditional>       ::= <logical_or>
+                      | <logical_or> "?" <expression> ":" <conditional>
+
+<logical_or>        ::= <logical_and>
+                      | <logical_or> "||" <logical_and>
+
+<logical_and>       ::= <equality>
+                      | <logical_and> "&&" <equality>
+
+<equality>          ::= <relational>
+                      | <equality> "==" <relational>
+                      | <equality> "!=" <relational>
+
+<relational>        ::= <additive>
+                      | <relational> "<" <additive>
+                      | <relational> ">" <additive>
+                      | <relational> "<=" <additive>
+                      | <relational> ">=" <additive>
+
+<additive>          ::= <multiplicative>
+                      | <additive> "+" <multiplicative>
+                      | <additive> "-" <multiplicative>
+
+<multiplicative>    ::= <unary>
+                      | <multiplicative> "*" <unary>
+                      | <multiplicative> "/" <unary>
+                      | <multiplicative> "%" <unary>
+
+<unary>             ::= <postfix>
+                      | "!" <unary>
+                      | "-" <unary>
+                      | "+" <unary>
+                      | "++" <unary>
+                      | "--" <unary>
+
+<postfix>           ::= <primary>
+                      | <postfix> "++"
+                      | <postfix> "--"
+                      | <postfix> "[" <expression> "]"
+                      | <postfix> "(" <argument_list> ")"
+                      | <postfix> "(" ")"
+
+<argument_list>     ::= <expression>
+                      | <expression> "," <argument_list>
+
+<primary>           ::= <identifier>
+                      | <integer>
+                      | <float>
+                      | <boolean>
+                      | <string>
+                      | <character>
+                      | "(" <expression> ")"
+                      | <array_literal>
+
+# Array Literal
+<array_literal>     ::= "[" <expression_list> "]"
+                      | "[" "]"
+
+# Basic Types and Literals
+<type>              ::= <primitive_type>
+                      | <array_type>
+
+<primitive_type>    ::= "int" | "float" | "bool" | "string" | "char"
+
+<array_type>        ::= <primitive_type> "[" "]"
+                      | <primitive_type> "[" <integer> "]"
+
+# Identifiers
+<identifier>        ::= <letter> <identifier_rest>
+                      | "_" <identifier_rest>
+
+<identifier_rest>   ::= <letter> <identifier_rest>
+                      | <digit> <identifier_rest>
+                      | "_" <identifier_rest>
+                      | ε
+
+# Numeric Literals
+<integer>           ::= <nonzero_digit> <digit_sequence>
+                      | "0"
+
+<float>             ::= <integer> "." <digit_sequence>
+                      | <integer> "." <digit_sequence> <exponent>
+                      | <integer> <exponent>
+                      | "." <digit_sequence>
+                      | "." <digit_sequence> <exponent>
+
+<digit_sequence>    ::= <digit> <digit_sequence>
+                      | <digit>
+
+<exponent>          ::= "e" <sign> <digit_sequence>
+                      | "E" <sign> <digit_sequence>
+                      | "e" <digit_sequence>
+                      | "E" <digit_sequence>
+
+<sign>              ::= "+" | "-"
+
+<nonzero_digit>     ::= "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+# Boolean Literals
+<boolean>           ::= "true" | "false"
+
+# String Literals
+<string>            ::= "\"" <string_content> "\""
+
+<string_content>    ::= <string_char> <string_content>
+                      | ε
+
+<string_char>       ::= <printable_char>
+                      | <escape_sequence>
+
+<escape_sequence>   ::= "\\" | "\"" | "\n" | "\t" | "\r" | "\0" | "\'" 
+                      | "\x" <hex_digit> <hex_digit>
+
+# Character Literals
+<character>         ::= "'" <char_content> "'"
+
+<char_content>      ::= <printable_char>
+                      | <escape_sequence>
+
+# Comments (typically handled by lexer, but included for completeness)
+<comment>           ::= <line_comment> | <block_comment>
+
+<line_comment>      ::= "//" <comment_text> <newline>
+
+<block_comment>     ::= "/*" <comment_content> "*/"
+
+<comment_text>      ::= <any_char_except_newline> <comment_text>
+                      | ε
+
+<comment_content>   ::= <any_char> <comment_content>
+                      | ε
+
+# Lexical Elements
+<letter>            ::= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m"
+                      | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+                      | "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M"
+                      | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+
+<digit>             ::= "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
+<hex_digit>         ::= <digit> | "a" | "b" | "c" | "d" | "e" | "f" | "A" | "B" | "C" | "D" | "E" | "F"
+
+<printable_char>    ::= <letter> | <digit> | <symbol>
+
+<symbol>            ::= " " | "!" | "#" | "$" | "%" | "&" | "(" | ")" | "*" | "+" | "," | "-" | "." | "/"
+                      | ":" | ";" | "<" | "=" | ">" | "?" | "@" | "[" | "]" | "^" | "_" | "`" | "{" | "|" | "}" | "~"
+
+<newline>           ::= "\n" | "\r\n" | "\r"
+
+<any_char_except_newline> ::= <printable_char> | "\t"
+
+<any_char>          ::= <printable_char> | <newline> | "\t"
+
+# Special symbol for empty production (epsilon)
+ε                   ::= 
+
+# Whitespace (typically handled by lexer)
+<whitespace>        ::= " " | "\t" | "\n" | "\r"
