@@ -1,9 +1,73 @@
-# SimpleLang Parser with Some Urdu Words instead of Coding Words
-* if --> agar
-* else --> varna
-* while --> jabtak
-* for --> tabtak
-* print --> dikhao
-* input --> likho
+# 🧠 SimpleLang Parser (with Urdu Keywords)
 
-## The program will first convert the code into the lexems or you can say tokens then it will send it to the parser in which we implemented Recursive Descent Parser also called LR(0) Parser which parser the tokens according to matching the grammar if grammar allows that syntax it wiil successfully parser and move further it grammar doesn't allowed then it will through error and tells you where you did the mistake during writing the code. Also used AST nodes for parser to give successfully parsed expression.
+A lightweight parser for **SimpleLang**, a custom language using Urdu-style programming keywords. This project tokenizes source code and parses it using a Recursive Descent Parser (LR(0)) to identify valid syntax and provide meaningful error messages.
+
+---
+
+## 📝 Urdu Keyword Mapping
+
+| English Keyword | Urdu Equivalent |
+|------------------|-----------------|
+| `if`             | `agar`          |
+| `else`           | `varna`         |
+| `while`          | `jabtak`        |
+| `for`            | `tabtak`        |
+| `print`          | `dikhao`        |
+| `input`          | `likho`         |
+
+---
+
+## ⚙️ Project Features
+
+- Lexical analysis (token generation)
+- Syntax analysis with Recursive Descent Parser (LR(0))
+- Clear syntax error messages with line references
+- Interactive mode for real-time parsing and finding syntax errors
+- Test automation for all test files
+
+---
+
+## 🚀 Getting Started
+
+### Step 1: Navigate to the source directory
+
+```bash
+cd .\src
+### Parse a test file
+```bash
+python main.py filename.sl
+```
+
+### Show tokens for a file
+```bash
+python main.py --tokens filename.sl
+```
+
+### Interactive mode
+```bash
+python main.py --interactive
+```
+
+### Run all tests
+```bash
+python tests/test_runner.py
+```
+
+## Common Examples
+
+### Parse a test file
+```bash
+python main.py tests/example.sl
+```
+
+<h2 style="text-alignment:center">THANK YOU</h2>
+
+### View tokens for a test file
+```bash
+python main.py --tokens example.sl
+```
+
+### Run test suite from project root
+```bash
+python -m tests.test_runner
+```
