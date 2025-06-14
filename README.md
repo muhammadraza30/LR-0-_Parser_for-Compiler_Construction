@@ -33,6 +33,8 @@ A lightweight parser for **SimpleLang**, a custom language using Urdu-style prog
 
 ```bash
 cd .\src
+```
+
 ### Parse a test file
 ```bash
 python main.py filename.sl
@@ -60,7 +62,6 @@ python tests/test_runner.py
 python main.py tests/example.sl
 ```
 
-<h2 style="text-alignment:center">THANK YOU</h2>
 
 ### View tokens for a test file
 ```bash
@@ -71,3 +72,4 @@ python main.py --tokens example.sl
 ```bash
 python -m tests.test_runner
 ```
+<div align="center"><h2 >THANK YOU</h2></div>
