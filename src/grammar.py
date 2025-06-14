@@ -171,6 +171,12 @@ class DeclareAndAssignNode(Statement):
 class PrintNode(Statement):
     """Print statement (dikhao)"""
     expressions: List[Expression]
+
+@dataclass
+class InputNode(Statement):
+    """Input statement (likho)"""
+    identifier: str
+
 # Operator precedence levels (higher number = higher precedence)
 OPERATOR_PRECEDENCE = {
     TokenType.OR: 1,

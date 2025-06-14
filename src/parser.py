@@ -134,6 +134,10 @@ class Parser:
             if self.match(TokenType.IDENTIFIER) and self.peek_token().type == TokenType.ASSIGN:
                 return self.parse_assignment()
             
+            # Check for input statement (likho)
+            if self.match(TokenType.INPUT):  # Assuming INPUT is the token type for 'likho'
+                return self.parse_input_statement()
+            
             # If none of the above, it's an error
             current = self.current_token()
             error = SyntaxError(
@@ -526,4 +530,31 @@ class Parser:
             expressions,
             dikhao_token.line,
             dikhao_token.column
+        )
+
+    def parse_input_statement(self) -> InputNode:
+        """Parse input statement: likho ( identifier ) ;"""
+        likho_token = self.advance()  # consume 'likho'
+        self.consume(TokenType.LEFT_PAREN, "Expected '(' after 'likho'")
+        
+        if not self.match(TokenType.IDENTIFIER):
+            current = self.current_token()
+            error = SyntaxError(
+                "Expected identifier in input statement",
+                current.line,
+                current.column,
+                expected="identifier",
+                found=f"{current.type.name} '{current.value}'"
+            )
+            self.error_reporter.report_error(error)
+            raise error
+        
+        identifier_token = self.advance()  # consume identifier
+        self.consume(TokenType.RIGHT_PAREN, "Expected ')' after identifier")
+        self.consume(TokenType.SEMICOLON, "Expected ';' after input statement")
+        
+        return InputNode(
+            identifier_token.value,
+            likho_token.line,
+            likho_token.column
         )

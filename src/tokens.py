@@ -18,6 +18,7 @@ class TokenType(Enum):
     TRUE = auto()
     FALSE = auto()
     PRINT = auto()
+    INPUT = auto()
     
     # Operators
     PLUS = auto()           # +
@@ -75,13 +76,12 @@ KEYWORDS = {
     'int': TokenType.INT,
     'bool': TokenType.BOOL,
     'string': TokenType.STRING,
-    'if': TokenType.IF,
-    'else': TokenType.ELSE,
-    'for': TokenType.FOR,
-    'while': TokenType.WHILE,
-    'true': TokenType.TRUE,
-    'false': TokenType.FALSE,
-    'dikhao': TokenType.PRINT  # Add dikhao keyword
+    'agar': TokenType.IF,       # Replace 'if' with 'agr'
+    'varna': TokenType.ELSE,   # Replace 'else' with 'varna'
+    'jabtak': TokenType.WHILE, # Replace 'while' with 'jabtak'
+    'tabtak': TokenType.FOR,   # Replace 'for' with 'tabtak'
+    'dikhao': TokenType.PRINT, # Replace 'print' with 'dikhao'
+    'likho': TokenType.INPUT   # Add 'likho' for input
 }
 
 # Single character operators/symbols

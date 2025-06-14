@@ -1,5 +1,4 @@
 # SimpleLang Grammar Specification in BNF/EBNF
-# This grammar defines the syntax rules for the SimpleLang programming language
 
 # Program Structure
 <program>           ::= <statement_list>
@@ -15,6 +14,7 @@
                       | <expression_statement>
                       | <return_statement>
                       | <print_statement>
+                      | <input_statement>
 
 # Variable Declaration
 <declaration>       ::= <type> <identifier> ";"
@@ -39,9 +39,8 @@
 <expression_list>   ::= <expression>
                       | <expression> "," <expression_list>
 
-# Variable Declaration (updated to explicitly show combined form)
-<declaration>       ::= <type> <identifier> ";"
-                      | <type> <identifier> "=" <expression> ";"
+# Input Statement (added for 'likho')
+<input_statement>   ::= "likho" "(" <identifier> ")" ";"
 
 # Control Structures
 <control_statement> ::= <if_statement> 
@@ -51,14 +50,14 @@
                       | <break_statement>
                       | <continue_statement>
 
-<if_statement>      ::= "if" "(" <expression> ")" <statement>
-                      | "if" "(" <expression> ")" <statement> "else" <statement>
+<if_statement>      ::= "agr" "(" <expression> ")" <statement>
+                      | "agr" "(" <expression> ")" <statement> "varna" <statement>
 
-<while_statement>   ::= "while" "(" <expression> ")" <statement>
+<while_statement>   ::= "jabtak" "(" <expression> ")" <statement>
 
-<do_while_statement> ::= "do" <statement> "while" "(" <expression> ")" ";"
+<do_while_statement> ::= "do" <statement> "jabtak" "(" <expression> ")" ";"
 
-<for_statement>     ::= "for" "(" <for_init> <expression> ";" <for_update> ")" <statement>
+<for_statement>     ::= "tabtak" "(" <for_init> <expression> ";" <for_update> ")" <statement>
 
 <for_init>          ::= <declaration>
                       | <assignment>
