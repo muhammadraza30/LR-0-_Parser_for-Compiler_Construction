@@ -1,12 +1,5 @@
 # SimpleLang Parser - Computer Programming Course Project Report
 
-## Project Overview
-
-**Project Title:** SimpleLang Syntax Analyzer with Urdu Keywords  
-**Course:** Computer Programming Course (CCP)  
-**Language:** Python  
-**Project Type:** Compiler/Interpreter Frontend (Lexical & Syntax Analysis)
-
 ## Executive Summary
 
 This project implements a complete syntax analyzer for SimpleLang, a custom programming language that uses Urdu-style keywords to make programming more accessible to Urdu speakers. The system performs lexical analysis (tokenization) and syntax analysis (parsing) using a recursive descent parser, providing comprehensive error reporting and an interactive development environment.
@@ -296,8 +289,3 @@ The project showcases advanced programming concepts including recursive descent 
 - Test-Driven Development Practices
 
 ---
-
-**Project Completion Date**: 2024  
-**Total Lines of Code**: ~1,500  
-**Test Coverage**: 95%+  
-**Documentation**: Complete
